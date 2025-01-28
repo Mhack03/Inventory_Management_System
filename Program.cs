@@ -1,23 +1,22 @@
-﻿using System.Text;
+﻿using Inventory_Management_System;
+using System.Text;
 
-namespace Inventory_Management_System
+namespace InventoryManagementSystem
 {
     public class Program
     {
-        /// <summary>
-        /// Entry point of the application.
-        /// </summary>
-        /// <param name="args">The command-line arguments.</param>
         static void Main(string[] args)
         {
-            //Sets console encoding to UTF-8 to handle special characters.
             Console.OutputEncoding = Encoding.UTF8;
-            InventoryManager inventory = new();
 
+            var inventoryManager = new InventoryManager();
+
+            // Main loop for the inventory management system
             while (true)
             {
                 try
                 {
+                    // Display the main menu options
                     Console.WriteLine("\nInventory Management System");
                     Console.WriteLine("1. Add Product");
                     Console.WriteLine("2. Remove Product");
@@ -25,221 +24,222 @@ namespace Inventory_Management_System
                     Console.WriteLine("4. List Products");
                     Console.WriteLine("5. Get Total Value");
                     Console.WriteLine("6. Exit");
-                    Console.Write("Choose an option: ");
-                    int option = Convert.ToInt32(Console.ReadLine());
 
-                    switch (option)
+                    // Get the user's menu option
+                    if (int.TryParse(Console.ReadLine(), out int option) && option >= 1 && option <= 6)
                     {
-                        case 1:
-                            AddProductWithAutoId(inventory);
-                            break;
-                        case 2:
-                            RemoveProduct(inventory);
-                            break;
-                        case 3:
-                            UpdateProduct(inventory);
-                            break;
-                        case 4:
-                            inventory.ListProducts();
-                            break;
-                        case 5:
-                            // Calculate and display the total value
-                            Console.ForegroundColor = ConsoleColor.Blue;
-                            Console.WriteLine($"Total Value: {inventory.GetTotalValue():C2}");
-                            Console.ResetColor();
-                            break;
-                        case 6:
-                            Environment.Exit(0);
-                            break;
-                        default:
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Invalid option. Please choose from 1 to 6.");
-                            Console.ResetColor();
-                            break;
+                        // Handle the user's menu option
+                        switch (option)
+                        {
+                            case 1:
+                                // Add a new product to the inventory with an automatically generated ID
+                                AddProductWithAutoId(inventoryManager);
+                                break;
+                            case 2:
+                                // Remove a product from the inventory
+                                RemoveProduct(inventoryManager);
+                                break;
+                            case 3:
+                                // Update a product in the inventory
+                                UpdateProduct(inventoryManager);
+                                break;
+                            case 4:
+                                // List all products in the inventory
+                                inventoryManager.ListProducts();
+                                break;
+                            case 5:
+                                // Display the total value of all products in the inventory
+                                Console.WriteLine($"Total Value: {inventoryManager.GetTotalValue():C2}");
+                                break;
+                            case 6:
+                                // Exit the program
+                                return;
+                        }
                     }
-                }
-                catch (FormatException)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid input. Please enter a valid number.");
-                    Console.ResetColor();
+                    else
+                    {
+                        // Display an error message if the user enters an invalid option
+                        Console.WriteLine("Invalid option. Please choose from 1 to 6.");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                    Console.ResetColor();
+                    // Catch and display any unexpected errors
+                    Console.WriteLine($"An unexpected error occurred: {ex.Message}");
                 }
             }
         }
 
         /// <summary>
-        /// Prompts the user to add a new product to the inventory with an auto-generated Product ID.
+        /// Adds a new product to the inventory with an automatically generated ID.
         /// </summary>
-        /// <param name="inventory">The inventory manager instance.</param>
-        private static void AddProductWithAutoId(InventoryManager inventory)
+        /// <param name="inventoryManager">The inventory manager instance.</param>
+        private static void AddProductWithAutoId(InventoryManager inventoryManager)
         {
-            try
-            {
-                // Generate the next available Product ID
-                int nextProductId = GetNextProductId(inventory);
+            // Get the next available product ID
+            var nextProductId = GetNextProductId(inventoryManager);
 
+            // Initialize product name variable
+            string productName;
+
+            // Loop until a valid product name is entered
+            while (true)
+            {
                 Console.Write("Enter Product Name: ");
-                string name = Console.ReadLine();
-                // Check if the product name is empty or contains only whitespace
-                if (string.IsNullOrWhiteSpace(name))
+                productName = Console.ReadLine().Trim();
+
+                // Check if the product name is not empty
+                if (!string.IsNullOrWhiteSpace(productName))
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: \nProduct name cannot be empty.");
-                    Console.ResetColor();
-                    return;
+                    break;
                 }
 
+                Console.WriteLine("Error: Product name cannot be empty.");
+            }
+
+            // Initialize quantity variable
+            int quantity;
+
+            // Loop until a valid quantity is entered
+            while (true)
+            {
                 Console.Write("Enter Quantity in Stock: ");
-                int quantity = Convert.ToInt32(Console.ReadLine());
-                // Check if the quantity is negative
-                if (quantity < 0)
+                if (int.TryParse(Console.ReadLine(), out quantity) && quantity >= 0)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: \nQuantity cannot be negative.");
-                    Console.ResetColor();
-                    return;
+                    break;
                 }
 
+                Console.WriteLine("Error: Quantity must be a non-negative integer.");
+            }
+
+            // Initialize price variable
+            double price;
+
+            // Loop until a valid price is entered
+            while (true)
+            {
                 Console.Write("Enter Price: ");
-                double price = Convert.ToDouble(Console.ReadLine());
-                // Check if the price is negative
-                if (price < 0)
+                if (double.TryParse(Console.ReadLine(), out price) && price >= 0)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: \nPrice cannot be negative.");
-                    Console.ResetColor();
-                    return;
+                    break;
                 }
 
-                // Create the new product with the generated ID
-                Product newProduct = new()
-                {
-                    ProductId = nextProductId,
-                    Name = name,
-                    QuantityInStock = quantity,
-                    Price = price
-                };
+                Console.WriteLine("Error: Price must be a non-negative number.");
+            }
 
-                // Call the existing AddProduct method to add the new product
-                inventory.AddProduct(newProduct);
-            }
-            catch (FormatException)
+            // Create a new product instance with the entered details
+            var newProduct = new Product
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Invalid input. Please enter valid data for the product.");
-                Console.ResetColor();
-            }
-            // Handle any other exceptions
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"An error occurred while adding the product: {ex.Message}");
-                Console.ResetColor();
-            }
+                ProductId = nextProductId,
+                Name = productName,
+                QuantityInStock = quantity,
+                Price = price
+            };
+
+            // Add the new product to the inventory
+            inventoryManager.AddProduct(newProduct);
         }
 
         /// <summary>
-        /// This method generates the next unique Product ID by checking the existing IDs in the inventory. 
-        /// If the inventory is empty, it returns 1; otherwise, it returns the highest existing ID plus 1.
-        /// Ensuring the value is greater than 0 and to lessen the chance of duplicates and a much more user-friendly experience.
+        /// Gets the next available product ID.
         /// </summary>
-        /// <param name="inventory">The inventory manager instance.</param>
-        /// <returns>The next Product ID.</returns>
-        private static int GetNextProductId(InventoryManager inventory)
+        /// <param name="inventoryManager">The inventory manager instance.</param>
+        /// <returns>The next available product ID.</returns>
+        private static int GetNextProductId(InventoryManager inventoryManager)
         {
-            if (inventory.Products.Count == 0)
+            // Check if the inventory manager is not null
+            if (inventoryManager == null)
             {
-                return 1;
+                throw new ArgumentNullException(nameof(inventoryManager));
             }
-            return inventory.Products.Max(p => p.ProductId) + 1;
+
+            // Check if there are any products in the inventory
+            return inventoryManager.Product.Any()
+                // If there are products, get the maximum product ID and increment it by 1
+                ? inventoryManager.Product.Max(p => p.ProductId) + 1
+                // If there are no products, start with product ID 1
+                : 1;
         }
 
+
         /// <summary>
-        /// Prompts the user to remove a product from the inventory by its Product ID.
+        /// Removes a product from the inventory.
         /// </summary>
-        /// <param name="inventory">The inventory manager instance.</param>
-        private static void RemoveProduct(InventoryManager inventory)
+        /// <param name="inventoryManager">The inventory manager instance.</param>
+        private static void RemoveProduct(InventoryManager inventoryManager)
         {
-            try
+            // Check if the inventory manager is null
+            if (inventoryManager is null)
+            {
+                throw new ArgumentNullException(nameof(inventoryManager));
+            }
+
+            // Continuously prompt the user for a product ID until a valid one is entered
+            while (true)
             {
                 Console.Write("Enter Product ID: ");
-                int id = Convert.ToInt32(Console.ReadLine());
-                Console.ForegroundColor = ConsoleColor.Green;
-                inventory.RemoveProduct(id);
-                Console.ResetColor();
-            }
-            catch (FormatException)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Invalid input. Please enter a valid number.");
-                Console.ResetColor();
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"An error occurred while removing the product: {ex.Message}");
-                Console.ResetColor();
+                if (int.TryParse(Console.ReadLine(), out int productId))
+                {
+                    try
+                    {
+                        // Attempt to remove the product from the inventory
+                        inventoryManager.RemoveProduct(productId);
+                        break;
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        // Display an error message if the product is not found
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                else
+                {
+                    // Display an error message if the input is not a valid number
+                    Console.WriteLine("Invalid input. Please enter a valid number.");
+                }
             }
         }
 
         /// <summary>
-        /// Prompts the user to update the quantity of an existing product by its Product ID.
+        /// Updates the quantity of a product in the inventory.
         /// </summary>
-        /// <param name="inventory">The inventory manager instance.</param>
-        private static void UpdateProduct(InventoryManager inventory)
+        /// <param name="inventoryManager">The inventory manager instance.</param>
+        private static void UpdateProduct(InventoryManager inventoryManager)
         {
-            try
+            // Initialize variables to store product ID and new quantity
+            int productId;
+            int newQuantity;
+
+            // Prompt user to enter product ID to update
+            while (true)
             {
                 Console.Write("Enter Product ID to Update: ");
-                int id = Convert.ToInt32(Console.ReadLine());
-                if (id <= 0)
+                // Attempt to parse user input as a positive integer
+                if (int.TryParse(Console.ReadLine(), out productId) && productId > 0)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: \nProduct ID must be a positive integer.");
-                    Console.ResetColor();
-                    return;
+                    // If successful, break out of loop
+                    break;
                 }
-                // Check if the product exists before updating
-                if (!inventory.InventoryExists(id))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: \nProduct ID not found.");
-                    Console.ResetColor();
-                    return;
-                }
+                // Display error message if input is invalid
+                Console.WriteLine("Error: Product ID must be a positive integer.");
+            }
 
+            // Prompt user to enter new quantity
+            while (true)
+            {
                 Console.Write("Enter New Quantity: ");
-                int newQuantity = Convert.ToInt32(Console.ReadLine());
-                if (newQuantity < 0)
+                // Attempt to parse user input as a non-negative integer
+                if (int.TryParse(Console.ReadLine(), out newQuantity) && newQuantity >= 0)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: \nQuantity cannot be negative.");
-                    Console.ResetColor();
-                    return;
+                    // If successful, break out of loop
+                    break;
                 }
+                // Display error message if input is invalid
+                Console.WriteLine("Error: Quantity cannot be negative.");
+            }
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                inventory.UpdateProduct(id, newQuantity);
-                Console.ResetColor();
-            }
-            catch (FormatException)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Invalid input. Please enter valid numeric values.");
-                Console.ResetColor();
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"An error occurred while updating the product: {ex.Message}");
-                Console.ResetColor();
-            }
+            // Update product quantity using inventory manager
+            inventoryManager.UpdateProduct(productId, newQuantity);
         }
     }
 }
