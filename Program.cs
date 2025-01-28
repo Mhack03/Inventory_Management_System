@@ -43,6 +43,7 @@ namespace Inventory_Management_System
                             inventory.ListProducts();
                             break;
                         case 5:
+                            // Calculate and display the total value
                             Console.ForegroundColor = ConsoleColor.Blue;
                             Console.WriteLine($"Total Value: {inventory.GetTotalValue():C2}");
                             Console.ResetColor();
@@ -80,10 +81,12 @@ namespace Inventory_Management_System
         {
             try
             {
+                // Generate the next available Product ID
                 int nextProductId = GetNextProductId(inventory);
 
                 Console.Write("Enter Product Name: ");
                 string name = Console.ReadLine();
+                // Check if the product name is empty or contains only whitespace
                 if (string.IsNullOrWhiteSpace(name))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -94,6 +97,7 @@ namespace Inventory_Management_System
 
                 Console.Write("Enter Quantity in Stock: ");
                 int quantity = Convert.ToInt32(Console.ReadLine());
+                // Check if the quantity is negative
                 if (quantity < 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -104,6 +108,7 @@ namespace Inventory_Management_System
 
                 Console.Write("Enter Price: ");
                 double price = Convert.ToDouble(Console.ReadLine());
+                // Check if the price is negative
                 if (price < 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -116,12 +121,12 @@ namespace Inventory_Management_System
                 Product newProduct = new()
                 {
                     ProductId = nextProductId,
-                    ProductName = name,
+                    Name = name,
                     QuantityInStock = quantity,
                     Price = price
                 };
 
-                // Call the existing AddProduct method
+                // Call the existing AddProduct method to add the new product
                 inventory.AddProduct(newProduct);
             }
             catch (FormatException)
@@ -130,6 +135,7 @@ namespace Inventory_Management_System
                 Console.WriteLine("Invalid input. Please enter valid data for the product.");
                 Console.ResetColor();
             }
+            // Handle any other exceptions
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -139,7 +145,9 @@ namespace Inventory_Management_System
         }
 
         /// <summary>
-        /// Generates the next Product ID by finding the highest existing ID and incrementing it by 1.
+        /// This method generates the next unique Product ID by checking the existing IDs in the inventory. 
+        /// If the inventory is empty, it returns 1; otherwise, it returns the highest existing ID plus 1.
+        /// Ensuring the value is greater than 0 and to lessen the chance of duplicates and a much more user-friendly experience.
         /// </summary>
         /// <param name="inventory">The inventory manager instance.</param>
         /// <returns>The next Product ID.</returns>
@@ -197,10 +205,11 @@ namespace Inventory_Management_System
                     Console.ResetColor();
                     return;
                 }
+                // Check if the product exists before updating
                 if (!inventory.InventoryExists(id))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Error: Product ID not found.");
+                    Console.WriteLine("Error: \nProduct ID not found.");
                     Console.ResetColor();
                     return;
                 }

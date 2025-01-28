@@ -9,10 +9,12 @@
 
         /// <summary>
         /// Adds a new product to the inventory.
+        /// With a single parameter of type Product
         /// </summary>
         /// <param name="product">The product to be added.</param>
         public void AddProduct(Product product)
         {
+            // Validate the product
             if (product == null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -20,6 +22,7 @@
                 Console.ResetColor();
                 return;
             }
+            // Validate the product ID is positive
             if (product.ProductId <= 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -27,6 +30,7 @@
                 Console.ResetColor();
                 return;
             }
+            // Check if a product with the same ID already exists
             if (Products.Any(p => p.ProductId == product.ProductId))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -34,9 +38,10 @@
                 Console.ResetColor();
                 return;
             }
+            // Add the new product
             Products.Add(product);
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"New {product.ProductName} has been added successfully.");
+            Console.WriteLine($"New {product.Name} has been added successfully.");
             Console.ResetColor();
         }
 
@@ -46,6 +51,7 @@
         /// <param name="productId">The ID of the product to remove.</param>
         public void RemoveProduct(int productId)
         {
+            // Validate the product ID
             var product = Products.FirstOrDefault(p => p.ProductId == productId);
             if (product != null)
             {
@@ -54,6 +60,7 @@
                 Console.WriteLine($"Product with ID {productId} has been removed successfully.");
                 Console.ResetColor();
             }
+            // Product not found
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -69,6 +76,7 @@
         /// <param name="newQuantity">The new quantity to be set.</param>
         public void UpdateProduct(int productId, int newQuantity)
         {
+            // Validate the new quantity value is not negative
             if (newQuantity < 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -76,6 +84,7 @@
                 Console.ResetColor();
                 return;
             }
+            // Update the quantity
             var product = Products.FirstOrDefault(p => p.ProductId == productId);
             if (product != null)
             {
@@ -84,6 +93,7 @@
                 Console.WriteLine($"Product with ID {productId} has been updated successfully.");
                 Console.ResetColor();
             }
+            // Product not found
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -97,6 +107,7 @@
         /// </summary>
         public void ListProducts()
         {
+            // List the products in the inventory or display a message if the inventory is empty
             if (Products.Count == 0)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -104,14 +115,16 @@
                 Console.ResetColor();
                 return;
             }
+            // Display the table header for easy reading
             Console.WriteLine("-------------------------------------------------------------------------------------------------------------");
             Console.WriteLine("| Product ID | Name                                               | Quantity In Stock | Price               |");
             Console.WriteLine("-------------------------------------------------------------------------------------------------------------");
 
+            // List the products in the inventory 
             foreach (var product in Products)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($"| {product.ProductId,-10} | {product.ProductName,-50} | {product.QuantityInStock,-17} | {product.Price.ToString("N2"),-19} |");
+                Console.WriteLine($"| {product.ProductId,-10} | {product.Name,-50} | {product.QuantityInStock,-17} | {product.Price.ToString("N2"),-19} |");
                 Console.ResetColor();
                 Console.WriteLine("-------------------------------------------------------------------------------------------------------------");
             }
